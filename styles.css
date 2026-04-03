@@ -1,0 +1,211 @@
+/* Configurações Gerais */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+    background-color: #f4f6f9;
+    color: #333;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 30px auto;
+    padding: 0 20px;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 30px;
+}
+
+/* Cabeçalho - Mantemos o azul escuro para contraste, mas o título ganha destaque */
+header {
+    background: linear-gradient(135deg, #122138 0%, #1a365d 100%); /* Azul mais profundo */
+    color: white;
+    padding: 25px 0;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+.header-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+header h1 {
+    font-size: 2rem;
+    margin-bottom: 5px;
+}
+
+/* Ícone do átomo com o verde do IF */
+header h1 i {
+    margin-right: 10px;
+    color: #4dc41c; /* Verde Lima IF */
+}
+
+/* Seções (Cards) */
+section {
+    background: white;
+    padding: 25px;
+    border-radius: 8px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.05);
+}
+
+h2 {
+    color: #2c3e50;
+    margin-bottom: 20px;
+    font-size: 1.4rem;
+    border-bottom: 2px solid #e2e8f0;
+    padding-bottom: 10px;
+}
+
+/* Ícones dos subtítulos com o verde do IF */
+h2 i {
+    margin-right: 8px;
+    color: #4dc41c; /* Verde Lima IF */
+}
+
+/* Formulário */
+#expForm {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.full-width {
+    grid-column: 1 / -1;
+}
+
+label {
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: #4a5568;
+    font-size: 0.9rem;
+}
+
+input, select, textarea {
+    padding: 10px;
+    border: 1px solid #cbd5e0;
+    border-radius: 5px;
+    font-size: 1rem;
+    transition: all 0.2s;
+}
+
+/* Foco dos inputs com o verde do IF */
+input:focus, select:focus, textarea:focus {
+    outline: none;
+    border-color: #4dc41c; /* Verde Lima IF */
+    box-shadow: 0 0 0 3px rgba(77, 196, 28, 0.15); /* Sombra suave verde */
+}
+
+/* Botão Principal com a cor do IF */
+.btn-primary {
+    grid-column: 1 / -1;
+    background-color: #4dc41c; /* Verde Lima IF */
+    color: white;
+    border: none;
+    padding: 12px;
+    border-radius: 5px;
+    font-size: 1.1rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background-color 0.2s, transform 0.1s;
+    text-transform: uppercase; /* Deixa o texto mais imponente */
+    letter-spacing: 0.5px;
+}
+
+/* Efeito de hover (passar o mouse) um pouco mais escuro */
+.btn-primary:hover {
+    background-color: #3da816;
+}
+
+/* Efeito de clique */
+.btn-primary:active {
+    transform: scale(0.98);
+}
+
+/* Cabeçalho da Tabela e Busca */
+.table-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 15px;
+    border-bottom: 2px solid #e2e8f0;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+}
+
+.table-header h2 {
+    border-bottom: none;
+    margin-bottom: 0;
+    padding-bottom: 0;
+}
+
+.search-box {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.search-box i {
+    position: absolute;
+    left: 10px;
+    color: #a0aec0;
+}
+
+.search-box input {
+    padding-left: 35px;
+    width: 250px;
+}
+
+/* Tabela */
+.table-wrapper {
+    overflow-x: auto;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+}
+
+th, td {
+    padding: 15px; /* Aumentei um pouco o respiro */
+    border-bottom: 1px solid #e2e8f0;
+}
+
+th {
+    background-color: #f7fafc;
+    color: #4a5568;
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.85rem;
+    letter-spacing: 0.5px;
+}
+
+tr:hover {
+    background-color: #f1f8ed; /* Hover bem suave usando tom de verde */
+}
+
+.btn-delete {
+    background-color: #e53e3e;
+    color: white;
+    border: none;
+    padding: 7px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    transition: background-color 0.2s;
+}
+
+.btn-delete:hover {
+    background-color: #c53030;
+}

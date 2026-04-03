@@ -1,0 +1,16 @@
+{
+  "short_name": "Lab Física",
+  "name": "Banco de Dados de Experimentos - IFSP",
+  "icons": [
+    {
+      "src": "https://cdn-icons-png.flaticon.com/512/3022/3022201.png",
+      "type": "image/png",
+      "sizes": "512x512"
+    }
+  ],
+  "start_url": "./index.html",
+  "background_color": "#f4f6f9",
+  "display": "standalone",
+  "scope": "./",
+  "theme_color": "#122138"
+}
