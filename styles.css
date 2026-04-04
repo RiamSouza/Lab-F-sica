@@ -15,197 +15,273 @@ body {
     max-width: 1200px;
     margin: 30px auto;
     padding: 0 20px;
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 30px;
 }
 
-/* Cabeçalho - Mantemos o azul escuro para contraste, mas o título ganha destaque */
+/* Cabeçalho Flutuante e Moderno */
 header {
-    background: linear-gradient(135deg, #122138 0%, #1a365d 100%); /* Azul mais profundo */
+    background: linear-gradient(135deg, #122138 0%, #1a365d 100%);
     color: white;
-    padding: 25px 0;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    padding: 30px 0;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    text-align: center;
 }
 
-.header-container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 0 20px;
-}
-
-header h1 {
-    font-size: 2rem;
+.header-container h1 {
+    font-size: 2.2rem;
     margin-bottom: 5px;
 }
 
-/* Ícone do átomo com o verde do IF */
-header h1 i {
+.header-container h1 i {
+    color: #4dc41c; /* Verde IF */
     margin-right: 10px;
-    color: #4dc41c; /* Verde Lima IF */
 }
 
-/* Seções (Cards) */
-section {
-    background: white;
-    padding: 25px;
-    border-radius: 8px;
-    box-shadow: 0 2px 12px rgba(0,0,0,0.05);
-}
-
-h2 {
-    color: #2c3e50;
-    margin-bottom: 20px;
-    font-size: 1.4rem;
-    border-bottom: 2px solid #e2e8f0;
-    padding-bottom: 10px;
-}
-
-/* Ícones dos subtítulos com o verde do IF */
-h2 i {
-    margin-right: 8px;
-    color: #4dc41c; /* Verde Lima IF */
-}
-
-/* Formulário */
-#expForm {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 20px;
-}
-
-.form-group {
-    display: flex;
-    flex-direction: column;
-}
-
-.full-width {
-    grid-column: 1 / -1;
-}
-
-label {
-    font-weight: 600;
-    margin-bottom: 8px;
-    color: #4a5568;
-    font-size: 0.9rem;
-}
-
-input, select, textarea {
-    padding: 10px;
-    border: 1px solid #cbd5e0;
-    border-radius: 5px;
+.header-container p {
     font-size: 1rem;
-    transition: all 0.2s;
-}
-
-/* Foco dos inputs com o verde do IF */
-input:focus, select:focus, textarea:focus {
-    outline: none;
-    border-color: #4dc41c; /* Verde Lima IF */
-    box-shadow: 0 0 0 3px rgba(77, 196, 28, 0.15); /* Sombra suave verde */
-}
-
-/* Botão Principal com a cor do IF */
-.btn-primary {
-    grid-column: 1 / -1;
-    background-color: #4dc41c; /* Verde Lima IF */
-    color: white;
-    border: none;
-    padding: 12px;
-    border-radius: 5px;
-    font-size: 1.1rem;
-    font-weight: 700;
-    cursor: pointer;
-    transition: background-color 0.2s, transform 0.1s;
-    text-transform: uppercase; /* Deixa o texto mais imponente */
-    letter-spacing: 0.5px;
-}
-
-/* Efeito de hover (passar o mouse) um pouco mais escuro */
-.btn-primary:hover {
-    background-color: #3da816;
-}
-
-/* Efeito de clique */
-.btn-primary:active {
-    transform: scale(0.98);
-}
-
-/* Cabeçalho da Tabela e Busca */
-.table-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 15px;
-    border-bottom: 2px solid #e2e8f0;
+    opacity: 0.8;
     margin-bottom: 20px;
-    padding-bottom: 10px;
 }
 
-.table-header h2 {
-    border-bottom: none;
-    margin-bottom: 0;
-    padding-bottom: 0;
-}
-
+/* Barra de Busca no Cabeçalho */
 .search-box {
     position: relative;
-    display: flex;
-    align-items: center;
+    max-width: 500px;
+    margin: 0 auto;
 }
 
 .search-box i {
     position: absolute;
-    left: 10px;
+    left: 15px;
+    top: 50%;
+    transform: translateY(-50%);
     color: #a0aec0;
 }
 
 .search-box input {
-    padding-left: 35px;
-    width: 250px;
+    width: 100%;
+    padding: 12px 15px 12px 45px;
+    border: none;
+    border-radius: 50px;
+    font-size: 1rem;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    outline: none;
 }
+
+/* GRADE DE CATEGORIAS (Quadradinhos) */
+.categories-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 20px;
+    margin-bottom: 40px;
+}
+
+.card-category {
+    background: white;
+    padding: 25px 15px;
+    border-radius: 12px;
+    text-align: center;
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    transition: all 0.3s ease;
+    border-bottom: 4px solid transparent;
+    position: relative; /* Necessário para o botão de atalho */
+}
+
+.card-category:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 15px rgba(0,0,0,0.1);
+    border-bottom-color: #4dc41c; /* Verde IF */
+}
+
+.card-category i {
+    font-size: 2.5rem;
+    color: #1a365d;
+    margin-bottom: 15px;
+}
+
+.card-category h3 {
+    font-size: 1.1rem;
+    color: #2d3748;
+    margin-bottom: 8px;
+}
+
+.card-category .count {
+    font-size: 0.85rem;
+    color: #a0aec0;
+}
+
+/* Botão de Adicionar Direto no Card */
+.btn-card-add {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: #edf2f7;
+    border: none;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    color: #4a5568;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.9rem;
+    transition: all 0.2s ease;
+}
+
+.btn-card-add:hover {
+    background: #4dc41c;
+    color: white;
+    transform: scale(1.1);
+}
+
+/* ABA DE RESULTADOS (Escondida por padrão) */
+.results-section {
+    background: white;
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.05);
+    display: none; /* Só aparece quando filtrar */
+    animation: fadeIn 0.4s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.results-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 2px solid #e2e8f0;
+    padding-bottom: 15px;
+    margin-bottom: 20px;
+}
+
+.results-header h2 {
+    color: #2c3e50;
+    font-size: 1.5rem;
+}
+
+.btn-close {
+    background: #edf2f7;
+    color: #4a5568;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.btn-close:hover { background: #e2e8f0; }
 
 /* Tabela */
-.table-wrapper {
-    overflow-x: auto;
-}
+.table-wrapper { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; text-align: left; }
+th, td { padding: 15px; border-bottom: 1px solid #e2e8f0; }
+th { background-color: #f7fafc; color: #4a5568; font-weight: 600; text-transform: uppercase; font-size: 0.8rem; }
+tr:hover { background-color: #f1f8ed; }
 
-table {
-    width: 100%;
-    border-collapse: collapse;
-    text-align: left;
-}
-
-th, td {
-    padding: 15px; /* Aumentei um pouco o respiro */
-    border-bottom: 1px solid #e2e8f0;
-}
-
-th {
-    background-color: #f7fafc;
-    color: #4a5568;
-    font-weight: 600;
-    text-transform: uppercase;
-    font-size: 0.85rem;
-    letter-spacing: 0.5px;
-}
-
-tr:hover {
-    background-color: #f1f8ed; /* Hover bem suave usando tom de verde */
-}
-
+/* Botões da Tabela */
 .btn-delete {
     background-color: #e53e3e;
     color: white;
     border: none;
-    padding: 7px 12px;
+    padding: 6px 10px;
     border-radius: 4px;
     cursor: pointer;
     font-size: 0.85rem;
-    transition: background-color 0.2s;
+}
+.btn-delete:hover { background-color: #c53030; }
+
+/* BOTÃO FLUTUANTE (+) */
+.btn-floating {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    background-color: #4dc41c; /* Verde IF */
+    color: white;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    border: none;
+    font-size: 1.8rem;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10;
 }
 
-.btn-delete:hover {
-    background-color: #c53030;
+.btn-floating:hover {
+    background-color: #3da816;
+    transform: scale(1.1) rotate(90deg);
 }
+
+/* JANELA MODAL (Pop-up de Cadastro) */
+.modal-overlay {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(4px);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 100;
+}
+
+.modal-card {
+    background: white;
+    width: 100%;
+    max-width: 500px;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+    animation: modalSpring 0.3s ease;
+}
+
+@keyframes modalSpring {
+    from { transform: scale(0.8); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    border-bottom: 2px solid #e2e8f0;
+    padding-bottom: 10px;
+}
+
+.btn-close-modal {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: #a0aec0;
+}
+
+/* Formulário no Modal */
+.form-group { display: flex; flex-direction: column; margin-bottom: 15px; }
+label { font-weight: 600; margin-bottom: 5px; color: #4a5568; font-size: 0.9rem; }
+input, select, textarea { padding: 10px; border: 1px solid #cbd5e0; border-radius: 5px; font-size: 1rem; }
+input:focus, select:focus, textarea:focus { outline: none; border-color: #4dc41c; box-shadow: 0 0 0 3px rgba(77, 196, 28, 0.15); }
+
+.btn-primary {
+    background-color: #4dc41c;
+    color: white;
+    border: none;
+    padding: 12px;
+    border-radius: 5px;
+    font-size: 1rem;
+    font-weight: 700;
+    cursor: pointer;
+    width: 100%;
+    text-transform: uppercase;
+}
+.btn-primary:hover { background-color: #3da816; }

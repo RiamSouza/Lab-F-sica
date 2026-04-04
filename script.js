@@ -1,23 +1,44 @@
-// Aguarda todo o HTML carregar antes de rodar o script
 document.addEventListener('DOMContentLoaded', () => {
     const expForm = document.getElementById('expForm');
     const listaExperimentos = document.getElementById('listaExperimentos');
     const buscaInput = document.getElementById('busca');
+    const resultsSection = document.getElementById('resultsSection');
+    const tituloCategoria = document.getElementById('tituloCategoria');
+    
+    // Elementos do Modal
+    const modalOverlay = document.getElementById('modalOverlay');
+    const btnOpenModal = document.getElementById('btnOpenModal');
+    const btnCloseModal = document.getElementById('btnCloseModal');
 
-    // 1. CARREGAR DADOS: Busca os experimentos salvos ou cria uma lista vazia
+    // Banco de dados local (guarda tudo no navegador do PC/Celular)
     let experimentos = JSON.parse(localStorage.getItem('experimentosLab')) || [];
+    let areaAtual = 'Todos';
 
-    // 2. FUNÇÃO PARA RENDERIZAR A TABELA
+    // 1. ATUALIZAR CONTADORES DOS QUADRADINHOS
+    function atualizarContadores() {
+        const areas = ['Mecânica', 'Óptica', 'Termodinâmica', 'Eletromagnetismo', 'Ondulatória', 'Outros'];
+        
+        areas.forEach(area => {
+            const total = experimentos.filter(exp => exp.area === area).length;
+            let idSpan = '';
+            
+            if (area === 'Mecânica') idSpan = 'count-mecanica';
+            else if (area === 'Óptica') idSpan = 'count-optica';
+            else if (area === 'Termodinâmica') idSpan = 'count-termo';
+            else if (area === 'Eletromagnetismo') idSpan = 'count-eletro';
+            else if (area === 'Ondulatória') idSpan = 'count-ondulatoria';
+            else if (area === 'Outros') idSpan = 'count-outros';
+
+            document.getElementById(idSpan).innerText = `${total} itens`;
+        });
+    }
+
+    // 2. RENDERIZAR TABELA
     function renderizarTabela(dadosParaExibir = experimentos) {
         listaExperimentos.innerHTML = '';
 
         if (dadosParaExibir.length === 0) {
-            listaExperimentos.innerHTML = `
-                <tr>
-                    <td colspan="5" style="text-align: center; color: #a0aec0;">
-                        Nenhum experimento encontrado.
-                    </td>
-                </tr>`;
+            listaExperimentos.innerHTML = `<tr><td colspan="4" style="text-align: center; color: #a0aec0;">Nenhum experimento encontrado.</td></tr>`;
             return;
         }
 
@@ -25,7 +46,6 @@ document.addEventListener('DOMContentLoaded', () => {
             const tr = document.createElement('tr');
             tr.innerHTML = `
                 <td style="font-weight: 600; color: #2d3748;">${exp.nome}</td>
-                <td><span class="badge">${exp.area}</span></td>
                 <td>${exp.localizacao || 'Não informada'}</td>
                 <td style="font-size: 0.9rem; color: #4a5568;">${exp.componentes || 'Nenhum item listado'}</td>
                 <td>
@@ -38,11 +58,48 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // 3. FUNÇÃO PARA ADICIONAR NOVO EXPERIMENTO
-    expForm.addEventListener('submit', (e) => {
-        e.preventDefault(); // Impede a página de recarregar
+    // 3. FILTRAR POR ÁREA (Ao clicar nos quadradinhos)
+    window.filtrarPorArea = function(area) {
+        areaAtual = area;
+        tituloCategoria.innerText = `Experimentos de ${area}`;
+        
+        const filtrados = experimentos.filter(exp => exp.area === area);
+        renderizarTabela(filtrados);
+        
+        resultsSection.style.display = 'block'; 
+        resultsSection.scrollIntoView({ behavior: 'smooth' }); 
+    };
 
-        // Pega os valores digitados
+    // Fechar aba de resultados
+    window.fecharAba = function() {
+        resultsSection.style.display = 'none';
+        areaAtual = 'Todos';
+    };
+
+    // 4. CONTROLES DO MODAL (POP-UP)
+    btnOpenModal.addEventListener('click', () => { 
+        document.getElementById('area').value = ""; // Reseta a seleção
+        modalOverlay.style.display = 'flex'; 
+    });
+    btnCloseModal.addEventListener('click', () => { modalOverlay.style.display = 'none'; });
+    
+    // Fechar ao clicar fora do modal
+    window.addEventListener('click', (e) => {
+        if (e.target === modalOverlay) modalOverlay.style.display = 'none';
+    });
+
+    // FUNÇÃO ATUALIZADA: Abrir o modal já focando na área que o usuário escolheu no card!
+    window.abrirModalComArea = function(event, area) {
+        event.stopPropagation(); // Evita que abra a aba de baixo ao clicar no botão de mais
+        const selectArea = document.getElementById('area');
+        selectArea.value = area;
+        modalOverlay.style.display = 'flex';
+    };
+
+    // 5. CADASTRAR NOVO EXPERIMENTO
+    expForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+
         const novoExp = {
             nome: document.getElementById('nome').value,
             area: document.getElementById('area').value,
@@ -50,24 +107,29 @@ document.addEventListener('DOMContentLoaded', () => {
             componentes: document.getElementById('componentes').value
         };
 
-        // Adiciona na lista principal
         experimentos.push(novoExp);
-
-        // Salva no LocalStorage do navegador
         localStorage.setItem('experimentosLab', JSON.stringify(experimentos));
-
-        // Limpa o formulário
+        
         expForm.reset();
-
-        // Atualiza a tabela na tela
-        renderizarTabela();
+        modalOverlay.style.display = 'none';
+        
+        atualizarContadores();
+        
+        if (areaAtual === novoExp.area) {
+            filtrarPorArea(areaAtual);
+        }
     });
 
-    // 4. FUNÇÃO DE BUSCA/FILTRO
+    // 6. BUSCA GLOBAL
     buscaInput.addEventListener('input', (e) => {
         const termoBusca = e.target.value.toLowerCase();
         
-        const experimentosFiltrados = experimentos.filter(exp => {
+        if (termoBusca === '') {
+            resultsSection.style.display = 'none';
+            return;
+        }
+
+        const filtrados = experimentos.filter(exp => {
             return (
                 exp.nome.toLowerCase().includes(termoBusca) ||
                 exp.area.toLowerCase().includes(termoBusca) ||
@@ -75,18 +137,28 @@ document.addEventListener('DOMContentLoaded', () => {
             );
         });
 
-        renderizarTabela(experimentosFiltrados);
+        tituloCategoria.innerText = `Resultados para "${termoBusca}"`;
+        renderizarTabela(filtrados);
+        resultsSection.style.display = 'block';
     });
 
-    // 5. FUNÇÃO PARA DELETAR (Global para o botão funcionar)
+    // 7. DELETAR
     window.deletarExperimento = function(index) {
         if (confirm(`Tem certeza que deseja excluir o experimento "${experimentos[index].nome}"?`)) {
-            experimentos.splice(index, 1); // Remove do array
-            localStorage.setItem('experimentosLab', JSON.stringify(experimentos)); // Atualiza o armazenamento
-            renderizarTabela(); // Atualiza a tela
+            const areaDoExcluido = experimentos[index].area;
+            experimentos.splice(index, 1);
+            localStorage.setItem('experimentosLab', JSON.stringify(experimentos));
+            
+            atualizarContadores();
+            
+            if (areaAtual === areaDoExcluido) {
+                filtrarPorArea(areaAtual);
+            } else {
+                fecharAba();
+            }
         }
-    }
+    };
 
-    // Inicializa a tabela quando abre o site
-    renderizarTabela();
+    atualizarContadores();
 });
+

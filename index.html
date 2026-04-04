@@ -17,14 +17,97 @@
 
     <header>
         <div class="header-container">
-            <h1><i class="fa-solid fa-atom"></i> Banco de Dados de Experimentos</h1>
-            <p>Monitoria de Física | IFSP</p>
+            <h1><i class="fa-solid fa-atom"></i> Laboratório de Física</h1>
+            <p>Monitoria | IFSP</p>
+            
+            <div class="search-box">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input type="text" id="busca" placeholder="Buscar experimento em todo o laboratório...">
+            </div>
         </div>
     </header>
 
     <main class="container">
-        <section class="form-section">
-            <h2><i class="fa-solid fa-plus"></i> Cadastrar Novo Experimento</h2>
+        
+        <section class="categories-grid">
+            <div class="card-category" onclick="filtrarPorArea('Mecânica')">
+                <button class="btn-card-add" onclick="abrirModalComArea(event, 'Mecânica')"><i class="fa-solid fa-plus"></i></button>
+                <i class="fa-solid fa-car-on"></i>
+                <h3>Mecânica</h3>
+                <span class="count" id="count-mecanica">0 itens</span>
+            </div>
+            
+            <div class="card-category" onclick="filtrarPorArea('Óptica')">
+                <button class="btn-card-add" onclick="abrirModalComArea(event, 'Óptica')"><i class="fa-solid fa-plus"></i></button>
+                <i class="fa-solid fa-eye"></i>
+                <h3>Óptica</h3>
+                <span class="count" id="count-optica">0 itens</span>
+            </div>
+            
+            <div class="card-category" onclick="filtrarPorArea('Termodinâmica')">
+                <button class="btn-card-add" onclick="abrirModalComArea(event, 'Termodinâmica')"><i class="fa-solid fa-plus"></i></button>
+                <i class="fa-solid fa-temperature-high"></i>
+                <h3>Termodinâmica</h3>
+                <span class="count" id="count-termo">0 itens</span>
+            </div>
+            
+            <div class="card-category" onclick="filtrarPorArea('Eletromagnetismo')">
+                <button class="btn-card-add" onclick="abrirModalComArea(event, 'Eletromagnetismo')"><i class="fa-solid fa-bolt"></i></button>
+                <i class="fa-solid fa-bolt"></i>
+                <h3>Eletromagnetismo</h3>
+                <span class="count" id="count-eletro">0 itens</span>
+            </div>
+            
+            <div class="card-category" onclick="filtrarPorArea('Ondulatória')">
+                <button class="btn-card-add" onclick="abrirModalComArea(event, 'Ondulatória')"><i class="fa-solid fa-wave-square"></i></button>
+                <i class="fa-solid fa-wave-square"></i>
+                <h3>Ondulatória</h3>
+                <span class="count" id="count-ondulatoria">0 itens</span>
+            </div>
+            
+            <div class="card-category" onclick="filtrarPorArea('Outros')">
+                <button class="btn-card-add" onclick="abrirModalComArea(event, 'Outros')"><i class="fa-solid fa-plus"></i></button>
+                <i class="fa-solid fa-box-archive"></i>
+                <h3>Outros</h3>
+                <span class="count" id="count-outros">0 itens</span>
+            </div>
+        </section>
+
+        <section class="results-section" id="resultsSection">
+            <div class="results-header">
+                <h2 id="tituloCategoria">Todos os Experimentos</h2>
+                <button class="btn-close" onclick="fecharAba()"><i class="fa-solid fa-xmark"></i> Fechar</button>
+            </div>
+            
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Nome</th>
+                            <th>Localização</th>
+                            <th>Componentes</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody id="listaExperimentos">
+                        </tbody>
+                </table>
+            </div>
+        </section>
+
+    </main>
+
+    <button class="btn-floating" id="btnOpenModal">
+        <i class="fa-solid fa-plus"></i>
+    </button>
+
+    <div class="modal-overlay" id="modalOverlay">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h2><i class="fa-solid fa-flask"></i> Novo Experimento</h2>
+                <button class="btn-close-modal" id="btnCloseModal"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            
             <form id="expForm">
                 <div class="form-group">
                     <label for="nome">Nome do Experimento:</label>
@@ -49,41 +132,15 @@
                     <input type="text" id="localizacao" placeholder="Ex: Armário B - Prateleira 2">
                 </div>
 
-                <div class="form-group full-width">
+                <div class="form-group">
                     <label for="componentes">Componentes / Equipamentos:</label>
-                    <textarea id="componentes" rows="3" placeholder="Liste os itens necessários para o experimento..."></textarea>
+                    <textarea id="componentes" rows="3" placeholder="Liste os itens necessários..."></textarea>
                 </div>
 
                 <button type="submit" class="btn-primary">Salvar Experimento</button>
             </form>
-        </section>
-
-        <section class="table-section">
-            <div class="table-header">
-                <h2><i class="fa-solid fa-flask"></i> Experimentos Catalogados</h2>
-                <div class="search-box">
-                    <i class="fa-solid fa-magnifying-glass"></i>
-                    <input type="text" id="busca" placeholder="Buscar experimento...">
-                </div>
-            </div>
-
-            <div class="table-wrapper">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Nome</th>
-                            <th>Área</th>
-                            <th>Localização</th>
-                            <th>Componentes</th>
-                            <th>Ações</th>
-                        </tr>
-                    </thead>
-                    <tbody id="listaExperimentos">
-                        </tbody>
-                </table>
-            </div>
-        </section>
-    </main>
+        </div>
+    </div>
 
     <script src="script.js"></script>
 </body>
