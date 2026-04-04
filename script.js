@@ -9,8 +9,14 @@ document.addEventListener('DOMContentLoaded', () => {
     const modalOverlay = document.getElementById('modalOverlay');
     const btnOpenModal = document.getElementById('btnOpenModal');
     const btnCloseModal = document.getElementById('btnCloseModal');
+    const modalTitle = document.getElementById('modalTitle');
+    const btnSubmitForm = document.getElementById('btnSubmitForm');
+    const editIndexField = document.getElementById('editIndex');
 
-    // Banco de dados local (guarda tudo no navegador do PC/Celular)
+    // Senha padrão definida por você
+    const SENHA_MESTRE = "2026";
+
+    // Banco de dados local
     let experimentos = JSON.parse(localStorage.getItem('experimentosLab')) || [];
     let areaAtual = 'Todos';
 
@@ -33,7 +39,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // 2. RENDERIZAR TABELA
+    // 2. RENDERIZAR TABELA COM BOTÃO DE EDITAR E EXCLUIR
     function renderizarTabela(dadosParaExibir = experimentos) {
         listaExperimentos.innerHTML = '';
 
@@ -42,23 +48,31 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        dadosParaExibir.forEach((exp, index) => {
+        dadosParaExibir.forEach((exp) => {
+            // Buscamos o index real no array principal para não dar erro ao filtrar
+            const indexReal = experimentos.findIndex(e => e.nome === exp.nome && e.localizacao === exp.localizacao);
+
             const tr = document.createElement('tr');
             tr.innerHTML = `
                 <td style="font-weight: 600; color: #2d3748;">${exp.nome}</td>
                 <td>${exp.localizacao || 'Não informada'}</td>
                 <td style="font-size: 0.9rem; color: #4a5568;">${exp.componentes || 'Nenhum item listado'}</td>
                 <td>
-                    <button class="btn-delete" onclick="deletarExperimento(${index})">
-                        <i class="fa-solid fa-trash-can"></i> Excluir
-                    </button>
+                    <div style="display: flex; gap: 5px;">
+                        <button class="btn-close" style="background-color: #3182ce; color: white;" onclick="abrirEdicao(${indexReal})">
+                            <i class="fa-solid fa-pen-to-square"></i> Editar
+                        </button>
+                        <button class="btn-delete" onclick="deletarExperimento(${indexReal})">
+                            <i class="fa-solid fa-trash-can"></i> Excluir
+                        </button>
+                    </div>
                 </td>
             `;
             listaExperimentos.appendChild(tr);
         });
     }
 
-    // 3. FILTRAR POR ÁREA (Ao clicar nos quadradinhos)
+    // 3. FILTRAR POR ÁREA
     window.filtrarPorArea = function(area) {
         areaAtual = area;
         tituloCategoria.innerText = `Experimentos de ${area}`;
@@ -70,7 +84,6 @@ document.addEventListener('DOMContentLoaded', () => {
         resultsSection.scrollIntoView({ behavior: 'smooth' }); 
     };
 
-    // Fechar aba de resultados
     window.fecharAba = function() {
         resultsSection.style.display = 'none';
         areaAtual = 'Todos';
@@ -78,36 +91,80 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // 4. CONTROLES DO MODAL (POP-UP)
     btnOpenModal.addEventListener('click', () => { 
-        document.getElementById('area').value = ""; // Reseta a seleção
-        modalOverlay.style.display = 'flex'; 
+        abrirModalParaCriar();
     });
+    
     btnCloseModal.addEventListener('click', () => { modalOverlay.style.display = 'none'; });
     
-    // Fechar ao clicar fora do modal
     window.addEventListener('click', (e) => {
         if (e.target === modalOverlay) modalOverlay.style.display = 'none';
     });
 
-    // FUNÇÃO ATUALIZADA: Abrir o modal já focando na área que o usuário escolheu no card!
-    window.abrirModalComArea = function(event, area) {
-        event.stopPropagation(); // Evita que abra a aba de baixo ao clicar no botão de mais
-        const selectArea = document.getElementById('area');
-        selectArea.value = area;
+    function abrirModalParaCriar() {
+        modalTitle.innerHTML = `<i class="fa-solid fa-flask"></i> Novo Experimento`;
+        btnSubmitForm.innerText = "Salvar Experimento";
+        expForm.reset();
+        editIndexField.value = ""; // Limpa a marcação de edição
         modalOverlay.style.display = 'flex';
+    }
+
+    window.abrirModalComArea = function(event, area) {
+        event.stopPropagation();
+        abrirModalParaCriar();
+        document.getElementById('area').value = area;
     };
 
-    // 5. CADASTRAR NOVO EXPERIMENTO
+    // FUNÇÃO DE EDITAR: Abre o modal preenchido com a trava de segurança!
+    window.abrirEdicao = function(index) {
+        const senhaDigitada = prompt(`Para editar o experimento "${experimentos[index].nome}", digite a senha do laboratório:`);
+
+        if (senhaDigitada === null) return;
+
+        if (senhaDigitada === SENHA_MESTRE) {
+            const exp = experimentos[index];
+            
+            // Preenche o formulário com os dados antigos
+            document.getElementById('nome').value = exp.nome;
+            document.getElementById('area').value = exp.area;
+            document.getElementById('localizacao').value = exp.localizacao;
+            document.getElementById('componentes').value = exp.componentes;
+            
+            // Guarda o index para saber qual estamos editando
+            editIndexField.value = index;
+
+            // Muda os textos do modal
+            modalTitle.innerHTML = `<i class="fa-solid fa-pen-to-square"></i> Editar Experimento`;
+            btnSubmitForm.innerText = "Atualizar Informações";
+            
+            modalOverlay.style.display = 'flex';
+        } else {
+            alert("Senha incorreta! Você não tem autorização para editar.");
+        }
+    };
+
+    // 5. CADASTRAR OU ATUALIZAR EXPERIMENTO
     expForm.addEventListener('submit', (e) => {
         e.preventDefault();
 
-        const novoExp = {
+        const dadosExp = {
             nome: document.getElementById('nome').value,
             area: document.getElementById('area').value,
             localizacao: document.getElementById('localizacao').value,
             componentes: document.getElementById('componentes').value
         };
 
-        experimentos.push(novoExp);
+        const indexParaEditar = editIndexField.value;
+
+        if (indexParaEditar !== "") {
+            // Se o campo de index tiver valor, significa que estamos EDITANDO
+            experimentos[indexParaEditar] = dadosExp;
+            alert("Experimento atualizado com sucesso!");
+        } else {
+            // Se estiver vazio, estamos CRIANDO um novo
+            experimentos.push(dadosExp);
+            alert("Experimento cadastrado com sucesso!");
+        }
+
         localStorage.setItem('experimentosLab', JSON.stringify(experimentos));
         
         expForm.reset();
@@ -115,8 +172,11 @@ document.addEventListener('DOMContentLoaded', () => {
         
         atualizarContadores();
         
-        if (areaAtual === novoExp.area) {
+        // Atualiza a tabela na tela
+        if (areaAtual !== 'Todos') {
             filtrarPorArea(areaAtual);
+        } else {
+            resultsSection.style.display = 'none';
         }
     });
 
@@ -142,9 +202,13 @@ document.addEventListener('DOMContentLoaded', () => {
         resultsSection.style.display = 'block';
     });
 
-    // 7. DELETAR
+    // 7. DELETAR (Também com a trava de segurança "2026")
     window.deletarExperimento = function(index) {
-        if (confirm(`Tem certeza que deseja excluir o experimento "${experimentos[index].nome}"?`)) {
+        const senhaDigitada = prompt(`Para excluir o experimento "${experimentos[index].nome}", digite a senha do laboratório:`);
+
+        if (senhaDigitada === null) return;
+
+        if (senhaDigitada === SENHA_MESTRE) {
             const areaDoExcluido = experimentos[index].area;
             experimentos.splice(index, 1);
             localStorage.setItem('experimentosLab', JSON.stringify(experimentos));
@@ -156,9 +220,11 @@ document.addEventListener('DOMContentLoaded', () => {
             } else {
                 fecharAba();
             }
+            alert("Experimento excluído com sucesso!");
+        } else {
+            alert("Senha incorreta! O experimento não foi excluído.");
         }
     };
 
     atualizarContadores();
 });
-

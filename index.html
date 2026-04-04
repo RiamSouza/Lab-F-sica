@@ -52,7 +52,7 @@
             </div>
             
             <div class="card-category" onclick="filtrarPorArea('Eletromagnetismo')">
-                <button class="btn-card-add" onclick="abrirModalComArea(event, 'Eletromagnetismo')"><i class="fa-solid fa-bolt"></i></button>
+                <button class="btn-card-add" onclick="abrirModalComArea(event, 'Eletromagnetismo')"><i class="fa-solid fa-plus"></i></button>
                 <i class="fa-solid fa-bolt"></i>
                 <h3>Eletromagnetismo</h3>
                 <span class="count" id="count-eletro">0 itens</span>
@@ -104,11 +104,13 @@
     <div class="modal-overlay" id="modalOverlay">
         <div class="modal-card">
             <div class="modal-header">
-                <h2><i class="fa-solid fa-flask"></i> Novo Experimento</h2>
+                <h2 id="modalTitle"><i class="fa-solid fa-flask"></i> Novo Experimento</h2>
                 <button class="btn-close-modal" id="btnCloseModal"><i class="fa-solid fa-xmark"></i></button>
             </div>
             
             <form id="expForm">
+                <input type="hidden" id="editIndex" value="">
+
                 <div class="form-group">
                     <label for="nome">Nome do Experimento:</label>
                     <input type="text" id="nome" placeholder="Ex: Queda Livre com Sensor" required>
@@ -137,7 +139,7 @@
                     <textarea id="componentes" rows="3" placeholder="Liste os itens necessários..."></textarea>
                 </div>
 
-                <button type="submit" class="btn-primary">Salvar Experimento</button>
+                <button type="submit" class="btn-primary" id="btnSubmitForm">Salvar Experimento</button>
             </form>
         </div>
     </div>
