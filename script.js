@@ -35,11 +35,13 @@ document.addEventListener('DOMContentLoaded', () => {
             else if (area === 'Ondulatória') idSpan = 'count-ondulatoria';
             else if (area === 'Outros') idSpan = 'count-outros';
 
-            document.getElementById(idSpan).innerText = `${total} itens`;
+            if (document.getElementById(idSpan)) {
+                document.getElementById(idSpan).innerText = `${total} itens`;
+            }
         });
     }
 
-    // 2. RENDERIZAR TABELA COM BOTÃO DE EDITAR E EXCLUIR
+    // 2. RENDERIZAR TABELA COM ÁREA, BOTÃO DE EDITAR E EXCLUIR
     function renderizarTabela(dadosParaExibir = experimentos) {
         listaExperimentos.innerHTML = '';
 
@@ -49,21 +51,33 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         dadosParaExibir.forEach((exp) => {
-            // Buscamos o index real no array principal para não dar erro ao filtrar
             const indexReal = experimentos.findIndex(e => e.nome === exp.nome && e.localizacao === exp.localizacao);
+
+            // Define uma corzinha para a etiqueta baseada na área
+            let corArea = "#718096"; // Cinza padrão
+            if (exp.area === 'Mecânica') corArea = "#3182ce"; // Azul
+            if (exp.area === 'Óptica') corArea = "#e53e3e"; // Vermelho
+            if (exp.area === 'Termodinâmica') corArea = "#dd6b20"; // Laranja
+            if (exp.area === 'Eletromagnetismo') corArea = "#805ad5"; // Roxo
+            if (exp.area === 'Ondulatória') corArea = "#38a169"; // Verde
 
             const tr = document.createElement('tr');
             tr.innerHTML = `
-                <td style="font-weight: 600; color: #2d3748;">${exp.nome}</td>
-                <td>${exp.localizacao || 'Não informada'}</td>
-                <td style="font-size: 0.9rem; color: #4a5568;">${exp.componentes || 'Nenhum item listado'}</td>
+                <td>
+                    <div style="font-weight: 600; color: #2d3748;">${exp.nome}</div>
+                    <span style="display: inline-block; font-size: 0.7rem; padding: 2px 8px; border-radius: 10px; background: ${corArea}; color: white; margin-top: 4px; text-transform: uppercase;">
+                        ${exp.area}
+                    </span>
+                </td>
+                <td>${exp.localizacao || '---'}</td>
+                <td style="font-size: 0.9rem; color: #4a5568;">${exp.componentes || '---'}</td>
                 <td>
                     <div style="display: flex; gap: 5px;">
-                        <button class="btn-close" style="background-color: #3182ce; color: white;" onclick="abrirEdicao(${indexReal})">
-                            <i class="fa-solid fa-pen-to-square"></i> Editar
+                        <button class="btn-close" style="background-color: #3182ce; color: white; font-size: 0.8rem;" onclick="abrirEdicao(${indexReal})">
+                            <i class="fa-solid fa-pen-to-square"></i>
                         </button>
-                        <button class="btn-delete" onclick="deletarExperimento(${indexReal})">
-                            <i class="fa-solid fa-trash-can"></i> Excluir
+                        <button class="btn-delete" style="font-size: 0.8rem;" onclick="deletarExperimento(${indexReal})">
+                            <i class="fa-solid fa-trash-can"></i>
                         </button>
                     </div>
                 </td>
@@ -90,10 +104,7 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     // 4. CONTROLES DO MODAL (POP-UP)
-    btnOpenModal.addEventListener('click', () => { 
-        abrirModalParaCriar();
-    });
-    
+    btnOpenModal.addEventListener('click', () => { abrirModalParaCriar(); });
     btnCloseModal.addEventListener('click', () => { modalOverlay.style.display = 'none'; });
     
     window.addEventListener('click', (e) => {
@@ -104,7 +115,7 @@ document.addEventListener('DOMContentLoaded', () => {
         modalTitle.innerHTML = `<i class="fa-solid fa-flask"></i> Novo Experimento`;
         btnSubmitForm.innerText = "Salvar Experimento";
         expForm.reset();
-        editIndexField.value = ""; // Limpa a marcação de edição
+        editIndexField.value = ""; 
         modalOverlay.style.display = 'flex';
     }
 
@@ -114,7 +125,6 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('area').value = area;
     };
 
-    // FUNÇÃO DE EDITAR: Abre o modal preenchido com a trava de segurança!
     window.abrirEdicao = function(index) {
         const senhaDigitada = prompt(`Para editar o experimento "${experimentos[index].nome}", digite a senha do laboratório:`);
 
@@ -122,20 +132,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (senhaDigitada === SENHA_MESTRE) {
             const exp = experimentos[index];
-            
-            // Preenche o formulário com os dados antigos
             document.getElementById('nome').value = exp.nome;
             document.getElementById('area').value = exp.area;
             document.getElementById('localizacao').value = exp.localizacao;
             document.getElementById('componentes').value = exp.componentes;
-            
-            // Guarda o index para saber qual estamos editando
             editIndexField.value = index;
 
-            // Muda os textos do modal
             modalTitle.innerHTML = `<i class="fa-solid fa-pen-to-square"></i> Editar Experimento`;
             btnSubmitForm.innerText = "Atualizar Informações";
-            
             modalOverlay.style.display = 'flex';
         } else {
             alert("Senha incorreta! Você não tem autorização para editar.");
@@ -156,23 +160,18 @@ document.addEventListener('DOMContentLoaded', () => {
         const indexParaEditar = editIndexField.value;
 
         if (indexParaEditar !== "") {
-            // Se o campo de index tiver valor, significa que estamos EDITANDO
             experimentos[indexParaEditar] = dadosExp;
             alert("Experimento atualizado com sucesso!");
         } else {
-            // Se estiver vazio, estamos CRIANDO um novo
             experimentos.push(dadosExp);
             alert("Experimento cadastrado com sucesso!");
         }
 
         localStorage.setItem('experimentosLab', JSON.stringify(experimentos));
-        
         expForm.reset();
         modalOverlay.style.display = 'none';
-        
         atualizarContadores();
         
-        // Atualiza a tabela na tela
         if (areaAtual !== 'Todos') {
             filtrarPorArea(areaAtual);
         } else {
@@ -183,11 +182,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // 6. BUSCA GLOBAL
     buscaInput.addEventListener('input', (e) => {
         const termoBusca = e.target.value.toLowerCase();
-        
-        if (termoBusca === '') {
-            resultsSection.style.display = 'none';
-            return;
-        }
+        if (termoBusca === '') { resultsSection.style.display = 'none'; return; }
 
         const filtrados = experimentos.filter(exp => {
             return (
@@ -202,17 +197,15 @@ document.addEventListener('DOMContentLoaded', () => {
         resultsSection.style.display = 'block';
     });
 
-    // 7. DELETAR (Também com a trava de segurança "2026")
+    // 7. DELETAR
     window.deletarExperimento = function(index) {
         const senhaDigitada = prompt(`Para excluir o experimento "${experimentos[index].nome}", digite a senha do laboratório:`);
-
         if (senhaDigitada === null) return;
 
         if (senhaDigitada === SENHA_MESTRE) {
             const areaDoExcluido = experimentos[index].area;
             experimentos.splice(index, 1);
             localStorage.setItem('experimentosLab', JSON.stringify(experimentos));
-            
             atualizarContadores();
             
             if (areaAtual === areaDoExcluido) {
