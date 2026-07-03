@@ -1,0 +1,286 @@
+:root {
+    --primary-color: #2c3e50;
+    --accent-color: #27ae60; /* Verde institucional do IFSP */
+    --bg-color: #f5f7fa;
+    --card-bg: #ffffff;
+    --text-color: #333333;
+    --danger-color: #e74c3c;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    margin: 0;
+    padding: 0;
+}
+
+.container {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+/* --- TELA DE BOAS VINDAS --- */
+#welcomeScreen {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    text-align: center;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+.welcome-title {
+    color: var(--primary-color);
+    margin-bottom: 30px;
+}
+
+.btn-group {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    width: 100%;
+    max-width: 400px;
+}
+
+.rect-button {
+    background-color: var(--card-bg);
+    border: 3px solid var(--primary-color);
+    border-radius: 12px;
+    padding: 30px 20px;
+    font-size: 18px;
+    font-weight: bold;
+    color: var(--primary-color);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+}
+
+.rect-button:hover {
+    background-color: var(--primary-color);
+    color: white;
+    transform: translateY(-2px);
+}
+
+.rect-button.admin {
+    border-color: var(--accent-color);
+    color: var(--accent-color);
+}
+
+.rect-button.admin:hover {
+    background-color: var(--accent-color);
+    color: white;
+}
+
+/* --- TELA DE AUTENTICAÇÃO --- */
+#authScreen {
+    display: none;
+    max-width: 400px;
+    margin: 80px auto;
+    background: var(--card-bg);
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+
+.auth-toggle {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+    border-bottom: 2px solid #eee;
+    padding-bottom: 10px;
+}
+
+.auth-toggle span {
+    cursor: pointer;
+    font-weight: bold;
+    color: #7f8c8d;
+}
+
+.auth-toggle span.active {
+    color: var(--accent-color);
+    border-bottom: 3px solid var(--accent-color);
+    padding-bottom: 10px;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: 500;
+}
+
+.form-group input, .admin-block input, .admin-block select, .admin-block textarea {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #bdc3c7;
+    border-radius: 6px;
+    box-sizing: border-box;
+    font-family: inherit;
+}
+
+.btn-submit {
+    width: 100%;
+    padding: 12px;
+    background-color: var(--accent-color);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.btn-back {
+    display: block;
+    text-align: center;
+    margin-top: 15px;
+    color: #7f8c8d;
+    text-decoration: none;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+/* --- PAINEL DE GERENCIAMENTO --- */
+#adminPanel {
+    display: none;
+    background: #e2f0d9;
+    padding: 20px;
+    border-radius: 8px;
+    margin-bottom: 25px;
+    border: 1px solid var(--accent-color);
+}
+
+#adminPanel h3 {
+    margin-top: 0;
+    color: #276a3e;
+}
+
+.admin-sections {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
+
+@media (max-width: 768px) {
+    .admin-sections { grid-template-columns: 1fr; }
+}
+
+.admin-block {
+    background: rgba(255,255,255,0.7);
+    padding: 15px;
+    border-radius: 6px;
+}
+
+.admin-block h4 { margin-top: 0; margin-bottom: 10px; color: var(--primary-color); }
+.admin-block input, .admin-block select, .admin-block textarea { margin-bottom: 10px; background: white; }
+
+.btn-admin-action {
+    background: var(--accent-color);
+    color: white;
+    border: none;
+    padding: 10px;
+    width: 100%;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.btn-admin-action.notice-btn {
+    background: #f39c12;
+}
+
+.btn-delete {
+    background: var(--danger-color);
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 4px;
+    font-size: 12px;
+    cursor: pointer;
+    margin-top: 10px;
+    display: inline-block;
+}
+
+/* --- QUADRO DE AVISOS --- */
+.notice-board {
+    background: #fff3cd;
+    border-left: 6px solid #ffc107;
+    padding: 15px;
+    border-radius: 6px;
+    margin-bottom: 25px;
+}
+
+.notice-board h2 { margin-top: 0; color: #856404; font-size: 20px; }
+.notice-item {
+    background: rgba(255,255,255,0.6);
+    padding: 10px;
+    border-radius: 4px;
+    margin-bottom: 8px;
+    font-size: 14px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+/* --- APP PRINCIPAL E GRID --- */
+#mainApp { display: none; }
+header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; border-bottom: 2px solid #ddd; padding-bottom: 15px; }
+
+.search-box { width: 100%; padding: 15px; font-size: 16px; border: 2px solid #bdc3c7; border-radius: 8px; box-sizing: border-box; margin-bottom: 25px; }
+.search-box:focus { border-color: var(--accent-color); }
+
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; }
+.card { background: var(--card-bg); border-radius: 8px; padding: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border-top: 4px solid #7f8c8d; display: flex; flex-direction: column; justify-content: space-between;}
+
+.badge { display: inline-block; background-color: #e8f4fd; color: #3498db; padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: bold; margin-bottom: 10px; text-transform: uppercase; align-self: flex-start; }
+.info-item { font-size: 14px; margin: 5px 0; }
+.info-label { font-weight: bold; color: #7f8c8d; }
+.logout-btn { background-color: #c0392b; color: white; border: none; padding: 8px 15px; border-radius: 4px; cursor: pointer; }
+.no-results { grid-column: 1 / -1; text-align: center; color: #7f8c8d; font-size: 18px; padding: 40px; }
+
+
+/* ==========================================================================
+   🎨 NOVO: SISTEMA DE CORES DINÂMICAS POR ÁREA DA FÍSICA
+   ========================================================================== */
+
+/* --- MECÂNICA (Azul Clássico) --- */
+.card:has(.badge:contains-archived), /* Fallback de segurança */
+.card:has(span:-webkit-any-link), 
+.card { border-top-color: #3498db; } /* Cor padrão para novos ou Mecânica */
+.card:has(.badge) { border-top-color: #7f8c8d; } 
+
+/* Filtros específicos baseados no texto da tag badge */
+.card:has([data-area="Mecânica"]), .card:has(.badge:empty) { border-top-color: #3498db; }
+
+/* Injetando cores nas etiquetas e bordas usando seletores inteligentes do JS */
+.badge-mecanica { background-color: #e8f4fd; color: #3498db; }
+.card-mecanica { border-top-color: #3498db !important; }
+
+/* --- TERMODINÂMICA (Laranja/Vermelho Térmico) --- */
+.badge-termodinamica { background-color: #ffeee6; color: #e67e22; }
+.card-termodinamica { border-top-color: #e67e22 !important; }
+
+/* --- ONDULATÓRIA (Roxo/Frequência) --- */
+.badge-ondulatoria { background-color: #f3e5f5; color: #9b59b6; }
+.card-ondulatoria { border-top-color: #9b59b6 !important; }
+
+/* --- ELETROMAGNETISMO (Amarelo/Eletricidade) --- */
+.badge-eletromagnetismo { background-color: #fffde7; color: #f1c40f; dark-beige: #d4ac0d; }
+/* Como amarelo puro no texto fica ruim de ler, usamos um tom mais escuro para a fonte */
+.badge-eletromagnetismo { background-color: #fef9e7; color: #b7950b; }
+.card-eletromagnetismo { border-top-color: #f1c40f !important; }
+
+/* --- ÓPTICA (Verde/Ciano Refração) --- */
+.badge-optica { background-color: #e0f7fa; color: #16a085; }
+.card-optica { border-top-color: #16a085 !important; }
+
+/* --- OUTROS / NÃO DEFINIDO (Cinza) --- */
+.badge-outros { background-color: #f2f4f4; color: #7f8c8d; }
+.card-outros { border-top-color: #bdc3c7 !important; }

@@ -3,147 +3,118 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Laboratório de Física - IFSP</title>
-    
-    <meta name="theme-color" content="#122138">
-
-    <link rel="manifest" href="data:application/manifest+json;base64,ewogICJzaG9ydF9uYW1lIjogIkxhYiBGw61zaWNhIiwKICAibmFtZSI6ICJCYW5jbyBkZSBEYWRvcyBkZSBFeHBlcmltZW50b3MgLSBJRlNQIiwKICAiaWNvbnMiOiBbCiAgICB7CiAgICAgICJzcmMiOiAiaHR0cHM6Ly9jZG4taWNvbnMtcG5nLmZsYXRpY29uLmNvbS81MTIvMzAyMi8zMDIyMjAxLnBuZyIsCiAgICAgICJ0eXBlIjogImltYWdlL3BuZyIsCiAgICAgICJzaXplcyI6ICI1MTJ4NTEyIgogICAgfQogIF0sCiAgInN0YXJ0X3VybCI6ICIuL2luZGV4Lmh0bWwiLAogICJiYWNrZ3JvdW5kX2NvbG9yIjogIiNmNGY2ZjkiLAogICJkaXNwbGF5IjogInN0YW5kYWxvbmUiLAogICJzY29wZSI6ICIuLyIsCiAgInRoZW1lX2NvbG9yIjogIiMxMjIxMzgiCn0=">
-
-    <link rel="stylesheet" href="styles.css">
-    
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <title>Sistema do Laboratório de Física - IFSP</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-    <header>
-        <div class="header-container">
-            <h1><i class="fa-solid fa-atom"></i> Laboratório de Física</h1>
-            <p>Monitoria | IFSP</p>
-            
-            <div class="search-box">
-                <i class="fa-solid fa-magnifying-glass"></i>
-                <input type="text" id="busca" placeholder="Buscar experimento em todo o laboratório...">
-            </div>
-        </div>
-    </header>
+<div class="container">
 
-    <main class="container">
-        
-        <section class="categories-grid">
-            <div class="card-category" onclick="filtrarPorArea('Mecânica')">
-                <button class="btn-card-add" onclick="abrirModalComArea(event, 'Mecânica')"><i class="fa-solid fa-plus"></i></button>
-                <i class="fa-solid fa-car-on"></i>
-                <h3>Mecânica</h3>
-                <span class="count" id="count-mecanica">0 itens</span>
-            </div>
-            
-            <div class="card-category" onclick="filtrarPorArea('Óptica')">
-                <button class="btn-card-add" onclick="abrirModalComArea(event, 'Óptica')"><i class="fa-solid fa-plus"></i></button>
-                <i class="fa-solid fa-eye"></i>
-                <h3>Óptica</h3>
-                <span class="count" id="count-optica">0 itens</span>
-            </div>
-            
-            <div class="card-category" onclick="filtrarPorArea('Termodinâmica')">
-                <button class="btn-card-add" onclick="abrirModalComArea(event, 'Termodinâmica')"><i class="fa-solid fa-plus"></i></button>
-                <i class="fa-solid fa-temperature-high"></i>
-                <h3>Termodinâmica</h3>
-                <span class="count" id="count-termo">0 itens</span>
-            </div>
-            
-            <div class="card-category" onclick="filtrarPorArea('Eletromagnetismo')">
-                <button class="btn-card-add" onclick="abrirModalComArea(event, 'Eletromagnetismo')"><i class="fa-solid fa-plus"></i></button>
-                <i class="fa-solid fa-bolt"></i>
-                <h3>Eletromagnetismo</h3>
-                <span class="count" id="count-eletro">0 itens</span>
-            </div>
-            
-            <div class="card-category" onclick="filtrarPorArea('Ondulatória')">
-                <button class="btn-card-add" onclick="abrirModalComArea(event, 'Ondulatória')"><i class="fa-solid fa-wave-square"></i></button>
-                <i class="fa-solid fa-wave-square"></i>
-                <h3>Ondulatória</h3>
-                <span class="count" id="count-ondulatoria">0 itens</span>
-            </div>
-            
-            <div class="card-category" onclick="filtrarPorArea('Outros')">
-                <button class="btn-card-add" onclick="abrirModalComArea(event, 'Outros')"><i class="fa-solid fa-plus"></i></button>
-                <i class="fa-solid fa-box-archive"></i>
-                <h3>Outros</h3>
-                <span class="count" id="count-outros">0 itens</span>
-            </div>
-        </section>
-
-        <section class="results-section" id="resultsSection">
-            <div class="results-header">
-                <h2 id="tituloCategoria">Todos os Experimentos</h2>
-                <button class="btn-close" onclick="fecharAba()"><i class="fa-solid fa-xmark"></i> Fechar</button>
-            </div>
-            
-            <div class="table-wrapper">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Nome</th>
-                            <th>Localização</th>
-                            <th>Componentes</th>
-                            <th>Ações</th>
-                        </tr>
-                    </thead>
-                    <tbody id="listaExperimentos">
-                        </tbody>
-                </table>
-            </div>
-        </section>
-
-    </main>
-
-    <button class="btn-floating" id="btnOpenModal">
-        <i class="fa-solid fa-plus"></i>
-    </button>
-
-    <div class="modal-overlay" id="modalOverlay">
-        <div class="modal-card">
-            <div class="modal-header">
-                <h2 id="modalTitle"><i class="fa-solid fa-flask"></i> Novo Experimento</h2>
-                <button class="btn-close-modal" id="btnCloseModal"><i class="fa-solid fa-xmark"></i></button>
-            </div>
-            
-            <form id="expForm">
-                <input type="hidden" id="editIndex" value="">
-
-                <div class="form-group">
-                    <label for="nome">Nome do Experimento:</label>
-                    <input type="text" id="nome" placeholder="Ex: Queda Livre com Sensor" required>
-                </div>
-
-                <div class="form-group">
-                    <label for="area">Área da Física:</label>
-                    <select id="area" required>
-                        <option value="" disabled selected>Selecione a área...</option>
-                        <option value="Mecânica">Mecânica</option>
-                        <option value="Óptica">Óptica</option>
-                        <option value="Termodinâmica">Termodinâmica</option>
-                        <option value="Eletromagnetismo">Eletromagnetismo</option>
-                        <option value="Ondulatória">Ondulatória</option>
-                        <option value="Outros">Outros</option>
-                    </select>
-                </div>
-
-                <div class="form-group">
-                    <label for="localizacao">Localização (Armário/Prateleira):</label>
-                    <input type="text" id="localizacao" placeholder="Ex: Armário B - Prateleira 2">
-                </div>
-
-                <div class="form-group">
-                    <label for="componentes">Componentes / Equipamentos:</label>
-                    <textarea id="componentes" rows="3" placeholder="Liste os itens necessários..."></textarea>
-                </div>
-
-                <button type="submit" class="btn-primary" id="btnSubmitForm">Salvar Experimento</button>
-            </form>
+    <div id="welcomeScreen">
+        <h1 class="welcome-title">Laboratório de Física - IFSP<br><small style="font-size: 16px; color:#7f8c8d;">Selecione seu perfil de acesso</small></h1>
+        <div class="btn-group">
+            <button class="rect-button" onclick="entrarComoAluno()">SOU ALUNO<br><span style="font-size: 12px; font-weight: normal; display: block;">Acesso Rápido de Leitura</span></button>
+            <button class="rect-button admin" onclick="mostrarTelaAuth()">SOU PROFESSOR / MONITOR<br><span style="font-size: 12px; font-weight: normal; display: block;">Painel de Controle</span></button>
         </div>
     </div>
 
-    <script src="script.js"></script>
+    <div id="authScreen">
+        <div class="auth-toggle">
+            <span id="tabLogin" class="active" onclick="alternarTab('login')">Entrar</span>
+            <span id="tabCadastro" onclick="alternarTab('cadastro')">Cadastrar</span>
+        </div>
+
+        <form id="formLogin" onsubmit="executarLogin(event)">
+            <div class="form-group">
+                <label for="loginId">ID de Usuário (LFXXXXXXX)</label>
+                <input type="text" id="loginId" placeholder="Ex: LF1234567" required>
+            </div>
+            <div class="form-group">
+                <label for="loginPassword">Senha</label>
+                <input type="password" id="loginPassword" required>
+            </div>
+            <button type="submit" class="btn-submit">Entrar no Painel</button>
+        </form>
+
+        <form id="formCadastro" onsubmit="executarCadastro(event)" style="display: none;">
+            <div class="form-group">
+                <label for="cadNome">Nome Completo</label>
+                <input type="text" id="cadNome" placeholder="Seu Nome" required>
+            </div>
+            <div class="form-group">
+                <label for="cadPassword">Criar Senha</label>
+                <input type="password" id="cadPassword" required>
+            </div>
+            <div class="form-group">
+                <label for="cadPasswordConfirm">Confirme a Senha</label>
+                <input type="password" id="cadPasswordConfirm" required>
+            </div>
+            <div class="form-group">
+                <label for="cadChave">Chave do Laboratório (Código Mestre)</label>
+                <input type="password" id="cadChave" placeholder="Digite a chave de segurança" required>
+            </div>
+            <button type="submit" class="btn-submit">Gerar meu ID e Cadastrar</button>
+        </form>
+
+        <a class="btn-back" onclick="voltarParaInicio()">← Voltar</a>
+    </div>
+
+    <div id="mainApp">
+        <header>
+            <div>
+                <h1 style="margin:0; font-size: 24px;">Inventário de Física</h1>
+                <span id="userStatus" style="font-size: 14px; color: #7f8c8d;">Modo: Leitura (Estudante)</span>
+            </div>
+            <button class="logout-btn" onclick="voltarParaInicio()">Sair / Bloquear</button>
+        </header>
+
+        <div id="adminPanel">
+            <h3>⚙️ Painel de Gerenciamento (Acesso Restrito)</h3>
+            
+            <div class="admin-sections">
+                <div class="admin-block">
+                    <h4>+ Adicionar Experimento</h4>
+                    <form id="formNovoExperimento" onsubmit="adicionarExperimentoNoGrid(event)">
+                        <input type="text" id="expNome" placeholder="Nome do experimento" required>
+                        <select id="expArea" required>
+                            <option value="">Selecione a Área...</option>
+                            <option value="Mecânica">Mecânica</option>
+                            <option value="Óptica">Óptica</option>
+                            <option value="Ondulatória">Ondulatória</option>
+                            <option value="Termodinâmica">Termodinâmica</option>
+                            <option value="Eletromagnetismo">Eletromagnetismo</option>
+                            <option value="Outros">Outros</option>
+                        </select>
+                        <input type="text" id="expLocal" placeholder="Localização (Ex: Armário A)">
+                        <input type="text" id="expComp" placeholder="Componentes integrantes">
+                        <button type="submit" class="btn-admin-action">Cadastrar Kit</button>
+                    </form>
+                </div>
+
+                <div class="admin-block">
+                    <h4>📢 Postar Novo Aviso no Mural</h4>
+                    <form id="formNovoAviso" onsubmit="adicionarAvisoNoMural(event)">
+                        <input type="text" id="avisoAutor" placeholder="Seu Nome/Cargo (Ex: Prof. Carlos)" required>
+                        <textarea id="avisoTexto" placeholder="Escreva a mensagem aqui..." rows="3" required></textarea>
+                        <button type="submit" class="btn-admin-action notice-btn">Publicar Aviso</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="notice-board">
+            <h2>📢 Quadro de Avisos do Laboratório</h2>
+            <div id="noticeList" class="notice-list">
+                </div>
+        </div>
+
+        <input type="text" id="searchBar" class="search-box" placeholder="Pesquise por nome do experimento ou área (ex: Mecânica, Óptica)...">
+
+        <div id="experimentsGrid" class="grid"></div>
+    </div>
+
+</div>
+
+<script src="script.js"></script>
 </body>
 </html>
