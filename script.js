@@ -204,20 +204,25 @@ function exibirExperimentos(lista) {
     lista.forEach(exp => {
         const card = document.createElement('div');
         
-        // Trata os acentos das strings para combinar com as classes CSS (ex: "Óptica" vira "optica")
         let classeArea = (exp.area || 'outros').toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
         card.className = `card card-${classeArea}`;
         
-        let botaoRemover = usuarioLogado ? `<button class="btn-delete" onclick="removerExperimento(${exp.id})">❌ Remover</button>` : '';
+        // Se estiver logado, cria os ícones de Lápis (Editar) e Lixeira (Excluir) no canto superior direito
+        let acoesAdmin = usuarioLogado ? `
+            <div class="card-header-actions">
+                <button class="btn-icon" onclick="editarExperimento(${exp.id})" title="Editar Experimento">✏️</button>
+                <button class="btn-icon" onclick="removerExperimento(${exp.id})" title="Remover Experimento">🗑️</button>
+            </div>
+        ` : '';
 
         card.innerHTML = `
             <div>
+                ${acoesAdmin}
                 <span class="badge badge-${classeArea}">${exp.area || 'Não Definida'}</span>
                 <h3 style="margin: 5px 0 15px 0; color: var(--primary-color); font-size:16px;">${exp.nome}</h3>
                 <p class="info-item"><span class="info-label">Localização:</span> ${exp.localizacao || 'Não cadastrada'}</p>
                 <p class="info-item"><span class="info-label">Componentes:</span> ${exp.componentes || 'Não catalogados'}</p>
             </div>
-            ${botaoRemover}
         `;
         grid.appendChild(card);
     });
@@ -261,6 +266,32 @@ function adicionarExperimentoNoGrid(event) {
     localStorage.setItem('experimentosLab', JSON.stringify(experimentos)); // Mantém persistido no navegador
     exibirExperimentos(experimentos);
     document.getElementById('formNovoExperimento').reset();
+}
+
+function editarExperimento(id) {
+    const exp = experimentos.find(e => e.id === id);
+    if (!exp) return;
+
+    const novoNome = prompt("Editar Nome do Experimento:", exp.nome);
+    if (novoNome === null) return; // Cancelado
+
+    const novaArea = prompt("Editar Área (Mecânica, Óptica, Ondulatória, Termodinâmica, Eletromagnetismo, Outros):", exp.area);
+    if (novaArea === null) return;
+
+    const novaLocalizacao = prompt("Editar Localização:", exp.localizacao);
+    if (novaLocalizacao === null) return;
+
+    const novosComponentes = prompt("Editar Componentes:", exp.componentes);
+    if (novosComponentes === null) return;
+
+    exp.nome = novoNome.trim() !== "" ? novoNome : exp.nome;
+    exp.area = novaArea.trim() !== "" ? novaArea : exp.area;
+    exp.localizacao = novaLocalizacao;
+    exp.componentes = novosComponentes;
+
+    localStorage.setItem('experimentosLab', JSON.stringify(experimentos));
+    exibirExperimentos(experimentos);
+    alert("Experimento atualizado com sucesso!");
 }
 
 function removerExperimento(id) {
@@ -318,3 +349,4 @@ window.adicionarExperimentoNoGrid = adicionarExperimentoNoGrid;
 window.removerExperimento = removerExperimento;
 window.adicionarAvisoNoMural = adicionarAvisoNoMural;
 window.removerAviso = removerAviso;
+window.editarExperimento = editarExperimento;
