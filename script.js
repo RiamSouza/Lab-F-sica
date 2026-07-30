@@ -151,7 +151,7 @@ function exibirExperimentos(lista) {
     lista.forEach(exp => {
         const card = document.createElement('div');
  
-        let classeArea = (exp.area || 'outros').toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+        let classeArea = (exp.area || 'outros').toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]/g, "");
         card.className = `card card-${classeArea}`;
  
         let acoesAdmin = usuarioLogado ? `

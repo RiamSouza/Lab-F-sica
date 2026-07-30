@@ -1,3 +1,4 @@
+
 :root {
     --primary-color: #2c3e50;
     --accent-color: #27ae60; /* Verde institucional do IFSP */
@@ -284,6 +285,15 @@ header { display: flex; justify-content: space-between; align-items: center; mar
 /* --- OUTROS / NÃO DEFINIDO (Cinza) --- */
 .badge-outros { background-color: #f2f4f4; color: #7f8c8d; }
 .card-outros { border-top-color: #bdc3c7 !important; }
+
+.badge-instdemedidas { background-color: #eaf6ff; color: #2980b9; }
+.card-instdemedidas { border-top-color: #5dade2 !important; }
+
+.badge-item { background-color: #eafaf1; color: #27ae60; }
+.card-item { border-top-color: #2ecc71 !important; }
+
+.badge-semdefinicao { background-color: #fdedec; color: #c0392b; }
+.card-semdefinicao { border-top-color: #e74c3c !important; }
 
 /* --- BOTÕES DE AÇÃO NO CARD (EDITAR/EXCLUIR) --- */
 .card-header-actions {
