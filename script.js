@@ -22,24 +22,36 @@ const searchBar = document.getElementById('searchBar');
 const CHAVE_MESTRE_LAB = "IFSP123";
  
 // --- COMUNICAÇÃO COM A PLANILHA ---
-async function buscarDaPlanilha(tipo) {
-    const resp = await fetch(`${URL_SCRIPT}?tipo=${tipo}`);
-    const json = await resp.json();
-    if (json.erro) throw new Error(json.erro);
-    return json;
+// Faz a requisição e tenta de novo automaticamente se o Google devolver
+// uma resposta instável (página HTML de erro em vez de JSON).
+async function requisitarComRetry(fazerRequisicao, tentativas = 3) {
+    for (let i = 0; i < tentativas; i++) {
+        try {
+            const resp = await fazerRequisicao();
+            const texto = await resp.text();
+            const json = JSON.parse(texto); // se vier HTML, cai no catch abaixo
+            if (json.erro) throw new Error(json.erro);
+            return json;
+        } catch (err) {
+            const ultimaTentativa = i === tentativas - 1;
+            if (ultimaTentativa) throw err;
+            await new Promise(r => setTimeout(r, 800 * (i + 1))); // espera um pouco antes de tentar de novo
+        }
+    }
 }
- 
+
+async function buscarDaPlanilha(tipo) {
+    return requisitarComRetry(() => fetch(`${URL_SCRIPT}?tipo=${tipo}`));
+}
+
 // Content-Type text/plain evita que o navegador dispare um "preflight" (OPTIONS),
 // que o Apps Script não responde corretamente.
 async function enviarParaPlanilha(tipo, acao, dados) {
-    const resp = await fetch(URL_SCRIPT, {
+    return requisitarComRetry(() => fetch(URL_SCRIPT, {
         method: 'POST',
         headers: { 'Content-Type': 'text/plain;charset=utf-8' },
         body: JSON.stringify({ tipo, acao, dados })
-    });
-    const json = await resp.json();
-    if (json.erro) throw new Error(json.erro);
-    return json;
+    }));
 }
  
 async function carregarDados() {
