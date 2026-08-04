@@ -173,14 +173,14 @@ function exibirExperimentos(lista) {
  
         let acoesAdmin = usuarioLogado ? `
             <div class="card-header-actions">
-                <button class="btn-icon" onclick="event.stopPropagation(); editarExperimento(${exp.linha})" title="Editar Experimento">✏️</button>
                 <button class="btn-icon" onclick="event.stopPropagation(); removerExperimento(${exp.linha})" title="Remover Experimento">🗑️</button>
             </div>
         ` : '';
  
         let seloStatus = '';
         if (exp.status === 'Em Reparo') seloStatus = `<span class="status-badge status-reparo">🛠️ Em Reparo</span>`;
-        if (exp.status === 'Com Defeito') seloStatus = `<span class="status-badge status-defeito">⚠️ Com Defeito</span>`;
+        else if (exp.status === 'Com Defeito') seloStatus = `<span class="status-badge status-defeito">⚠️ Com Defeito</span>`;
+        else seloStatus = `<span class="status-badge status-ativo">✅ Ativo</span>`;
  
         card.innerHTML = `
             <div>
@@ -236,39 +236,6 @@ async function adicionarExperimentoNoGrid(event) {
     }
 }
  
-async function editarExperimento(linha) {
-    const exp = experimentos.find(e => e.linha === linha);
-    if (!exp) return;
- 
-    const novoNome = prompt("Editar Nome do Experimento:", exp.nome);
-    if (novoNome === null) return;
- 
-    const novaArea = prompt("Editar Área (Mecânica, Óptica, Ondulatória, Termodinâmica, Eletromagnetismo, Outros):", exp.area);
-    if (novaArea === null) return;
- 
-    const novaLocalizacao = prompt("Editar Localização:", exp.localizacao);
-    if (novaLocalizacao === null) return;
- 
-    const novosComponentes = prompt("Editar Componentes:", exp.componentes);
-    if (novosComponentes === null) return;
- 
-    const dadosAtualizados = {
-        linha,
-        nome: novoNome.trim() !== "" ? novoNome : exp.nome,
-        area: novaArea.trim() !== "" ? novaArea : exp.area,
-        localizacao: novaLocalizacao,
-        componentes: novosComponentes
-    };
- 
-    try {
-        await enviarParaPlanilha('Experimentos', 'editar', dadosAtualizados);
-        await carregarDados();
-        alert("Experimento atualizado com sucesso!");
-    } catch (err) {
-        alert("Erro ao editar experimento: " + err.message);
-    }
-}
- 
 async function removerExperimento(linha) {
     if (!confirm("Tem certeza que deseja remover este experimento do inventário?")) return;
     try {
@@ -307,6 +274,8 @@ async function removerAviso(linha) {
     }
 }
  
+const AREAS_DISPONIVEIS = ["Mecânica", "Óptica", "Ondulatória", "Termodinâmica", "Eletromagnetismo", "INSTRUMENTOS DE MEDIDA", "ITEM", "SEM DEFINIÇÃO", "Outros"];
+ 
 // --- MODAL DE DETALHES DO EXPERIMENTO ---
 function abrirModalExperimento(linha) {
     const exp = experimentos.find(e => e.linha === linha);
@@ -317,46 +286,47 @@ function abrirModalExperimento(linha) {
  
     const statusAtual = exp.status || 'Ativo';
  
-    let blocoAcao = '';
     if (usuarioLogado) {
-        blocoAcao = `
-            <div class="form-group" style="margin-top:16px;">
-                <label for="modalStatusSelect">Status do experimento</label>
-                <select id="modalStatusSelect">
+        const opcoesArea = AREAS_DISPONIVEIS.map(a =>
+            `<option value="${a}" ${a === exp.area ? 'selected' : ''}>${a}</option>`
+        ).join('');
+ 
+        modalConteudo.innerHTML = `
+            <button class="modal-fechar" onclick="fecharModal()">✕</button>
+            <h3>Editar experimento</h3>
+ 
+            <div class="form-group">
+                <label for="modalEditNome">Nome do experimento</label>
+                <input type="text" id="modalEditNome" value="${exp.nome.replace(/"/g, '&quot;')}">
+            </div>
+            <div class="form-group">
+                <label for="modalEditArea">Área</label>
+                <select id="modalEditArea">${opcoesArea}</select>
+            </div>
+            <div class="form-group">
+                <label for="modalEditLocal">Localização</label>
+                <input type="text" id="modalEditLocal" value="${(exp.localizacao || '').replace(/"/g, '&quot;')}">
+            </div>
+            <div class="form-group">
+                <label for="modalEditComp">Componentes</label>
+                <input type="text" id="modalEditComp" value="${(exp.componentes || '').replace(/"/g, '&quot;')}">
+            </div>
+            <div class="form-group">
+                <label for="modalEditStatus">Status</label>
+                <select id="modalEditStatus">
                     <option value="Ativo" ${statusAtual === 'Ativo' ? 'selected' : ''}>Ativo</option>
                     <option value="Em Reparo" ${statusAtual === 'Em Reparo' ? 'selected' : ''}>Em Reparo</option>
                     <option value="Com Defeito" ${statusAtual === 'Com Defeito' ? 'selected' : ''}>Com Defeito</option>
                 </select>
-                <button class="btn-admin-action" style="margin-top:8px;" onclick="mudarStatusExperimento(${linha})">Salvar status</button>
             </div>
-            <div style="margin-top:16px;">
-                <h4 style="margin-bottom:8px; font-size:14px;">Relatos deste experimento</h4>
+            <button class="btn-admin-action" onclick="salvarEdicaoExperimento(${linha})">Salvar alterações</button>
+ 
+            <div class="modal-secao">
+                <h4>Relatos deste experimento</h4>
                 <div id="modalRelatosDoItem"></div>
             </div>
         `;
-    } else {
-        blocoAcao = `
-            <div class="form-group" style="margin-top:16px;">
-                <label for="modalRelatoTexto">Reportar problema com este experimento</label>
-                <textarea id="modalRelatoTexto" rows="3" placeholder="Descreva o que você percebeu..."></textarea>
-                <button class="btn-admin-action" style="margin-top:8px;" onclick="reportarProblema(${linha})">Enviar relato</button>
-            </div>
-        `;
-    }
  
-    modalConteudo.innerHTML = `
-        <button class="modal-fechar" onclick="fecharModal()">✕</button>
-        <h3>${exp.nome}</h3>
-        <p class="info-item"><span class="info-label">Área:</span> ${exp.area || 'Não definida'}</p>
-        <p class="info-item"><span class="info-label">Localização:</span> ${exp.localizacao || 'Não cadastrada'}</p>
-        <p class="info-item"><span class="info-label">Componentes:</span> ${exp.componentes || 'Não catalogados'}</p>
-        <p class="info-item"><span class="info-label">Status atual:</span> ${statusAtual}</p>
-        ${blocoAcao}
-    `;
- 
-    modalOverlay.style.display = 'flex';
- 
-    if (usuarioLogado) {
         const relatosDoItem = relatos.filter(r => String(r.experimento_linha) === String(linha));
         const container = document.getElementById('modalRelatosDoItem');
         if (relatosDoItem.length === 0) {
@@ -373,7 +343,26 @@ function abrirModalExperimento(linha) {
                 </div>
             `).join('');
         }
+    } else {
+        modalConteudo.innerHTML = `
+            <button class="modal-fechar" onclick="fecharModal()">✕</button>
+            <h3>${exp.nome}</h3>
+            <p class="info-item"><span class="info-label">Área:</span> ${exp.area || 'Não definida'}</p>
+            <p class="info-item"><span class="info-label">Localização:</span> ${exp.localizacao || 'Não cadastrada'}</p>
+            <p class="info-item"><span class="info-label">Componentes:</span> ${exp.componentes || 'Não catalogados'}</p>
+            <p class="info-item"><span class="info-label">Status atual:</span> ${statusAtual}</p>
+ 
+            <div class="modal-secao">
+                <div class="form-group">
+                    <label for="modalRelatoTexto">Reportar problema com este experimento</label>
+                    <textarea id="modalRelatoTexto" rows="3" placeholder="Descreva o que você percebeu..."></textarea>
+                    <button class="btn-admin-action" style="margin-top:8px;" onclick="reportarProblema(${linha})">Enviar relato</button>
+                </div>
+            </div>
+        `;
     }
+ 
+    modalOverlay.style.display = 'flex';
 }
  
 function fecharModal() {
@@ -384,14 +373,21 @@ function fecharModalSeClicouFora(event) {
     if (event.target.id === 'modalOverlay') fecharModal();
 }
  
-async function mudarStatusExperimento(linha) {
-    const novoStatus = document.getElementById('modalStatusSelect').value;
+async function salvarEdicaoExperimento(linha) {
+    const nome = document.getElementById('modalEditNome').value.trim();
+    const area = document.getElementById('modalEditArea').value;
+    const localizacao = document.getElementById('modalEditLocal').value;
+    const componentes = document.getElementById('modalEditComp').value;
+    const status = document.getElementById('modalEditStatus').value;
+ 
+    if (!nome) { alert("O nome do experimento não pode ficar em branco."); return; }
+ 
     try {
-        await enviarParaPlanilha('Experimentos', 'mudarStatus', { linha, status: novoStatus });
+        await enviarParaPlanilha('Experimentos', 'editar', { linha, nome, area, localizacao, componentes, status });
         await carregarDados();
         fecharModal();
     } catch (err) {
-        alert("Erro ao mudar status: " + err.message);
+        alert("Erro ao salvar alterações: " + err.message);
     }
 }
  
@@ -484,18 +480,11 @@ window.adicionarExperimentoNoGrid = adicionarExperimentoNoGrid;
 window.removerExperimento = removerExperimento;
 window.adicionarAvisoNoMural = adicionarAvisoNoMural;
 window.removerAviso = removerAviso;
-window.editarExperimento = editarExperimento;
 window.abrirModalExperimento = abrirModalExperimento;
 window.fecharModal = fecharModal;
 window.fecharModalSeClicouFora = fecharModalSeClicouFora;
-window.mudarStatusExperimento = mudarStatusExperimento;
+window.salvarEdicaoExperimento = salvarEdicaoExperimento;
 window.reportarProblema = reportarProblema;
 window.confirmarRelato = confirmarRelato;
 window.descartarRelato = descartarRelato;
  
-
-
-
-
-
-
