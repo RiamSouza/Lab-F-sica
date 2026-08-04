@@ -116,7 +116,7 @@ body {
     font-weight: 500;
 }
 
-.form-group input, .admin-block input, .admin-block select, .admin-block textarea {
+.form-group input, .form-group select, .form-group textarea, .admin-block input, .admin-block select, .admin-block textarea {
     width: 100%;
     padding: 10px;
     border: 1px solid #bdc3c7;
@@ -318,13 +318,14 @@ header { display: flex; justify-content: space-between; align-items: center; mar
 /* --- SELO DE STATUS (opção 2: selo no topo do card) --- */
 .status-badge {
     font-size: 11px;
-    padding: 2px 8px;
-    border-radius: 4px;
+    padding: 3px 10px;
+    border-radius: 20px;
     display: inline-flex;
     align-items: center;
     gap: 4px;
     font-weight: 500;
 }
+.status-ativo { background-color: #eafaf1; color: #1e8449; }
 .status-reparo { background-color: #fff3e0; color: #b25c00; }
 .status-defeito { background-color: #fdedec; color: #c0392b; }
 .card-top-row {
@@ -382,5 +383,15 @@ header { display: flex; justify-content: space-between; align-items: center; mar
 .modal-relato-acoes button {
     font-size: 12px;
     padding: 4px 8px;
+}
+.modal-secao {
+    border-top: 1px solid #eee;
+    margin-top: 18px;
+    padding-top: 14px;
+}
+.modal-secao h4 {
+    margin: 0 0 10px 0;
+    font-size: 14px;
+    color: var(--primary-color);
 }
  
