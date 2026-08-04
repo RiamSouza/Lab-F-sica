@@ -7,6 +7,7 @@ const URL_SCRIPT = "https://script.google.com/macros/s/AKfycbwwbfPMl_PJGJTDS34JY
  
 let experimentos = [];
 let avisos = [];
+let relatos = [];
 let usuarioLogado = false;
  
 // --- MAPEAMENTO DE ELEMENTOS ---
@@ -59,16 +60,19 @@ async function carregarDados() {
         grid.innerHTML = '<div class="no-results">Carregando experimentos...</div>';
         noticeList.innerHTML = '<div style="font-size:14px;">Carregando avisos...</div>';
  
-        const [expData, avisosData] = await Promise.all([
+        const [expData, avisosData, relatosData] = await Promise.all([
             buscarDaPlanilha('Experimentos'),
-            buscarDaPlanilha('Avisos')
+            buscarDaPlanilha('Avisos'),
+            buscarDaPlanilha('Relatos')
         ]);
  
         experimentos = expData;
         avisos = avisosData;
+        relatos = relatosData;
  
         exibirExperimentos(experimentos);
         exibirAvisos();
+        if (usuarioLogado) exibirRelatosPendentes();
     } catch (err) {
         grid.innerHTML = `<div class="no-results">Erro ao carregar dados: ${err.message}</div>`;
         console.error(err);
@@ -164,19 +168,27 @@ function exibirExperimentos(lista) {
         const card = document.createElement('div');
  
         let classeArea = (exp.area || 'outros').toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]/g, "");
-        card.className = `card card-${classeArea}`;
+        card.className = `card card-${classeArea} card-clicavel`;
+        card.onclick = () => abrirModalExperimento(exp.linha);
  
         let acoesAdmin = usuarioLogado ? `
             <div class="card-header-actions">
-                <button class="btn-icon" onclick="editarExperimento(${exp.linha})" title="Editar Experimento">✏️</button>
-                <button class="btn-icon" onclick="removerExperimento(${exp.linha})" title="Remover Experimento">🗑️</button>
+                <button class="btn-icon" onclick="event.stopPropagation(); editarExperimento(${exp.linha})" title="Editar Experimento">✏️</button>
+                <button class="btn-icon" onclick="event.stopPropagation(); removerExperimento(${exp.linha})" title="Remover Experimento">🗑️</button>
             </div>
         ` : '';
+ 
+        let seloStatus = '';
+        if (exp.status === 'Em Reparo') seloStatus = `<span class="status-badge status-reparo">🛠️ Em Reparo</span>`;
+        if (exp.status === 'Com Defeito') seloStatus = `<span class="status-badge status-defeito">⚠️ Com Defeito</span>`;
  
         card.innerHTML = `
             <div>
                 ${acoesAdmin}
-                <span class="badge badge-${classeArea}">${exp.area || 'Não Definida'}</span>
+                <div class="card-top-row">
+                    <span class="badge badge-${classeArea}">${exp.area || 'Não Definida'}</span>
+                    ${seloStatus}
+                </div>
                 <h3 style="margin: 5px 0 15px 0; color: var(--primary-color); font-size:16px;">${exp.nome}</h3>
                 <p class="info-item"><span class="info-label">Localização:</span> ${exp.localizacao || 'Não cadastrada'}</p>
                 <p class="info-item"><span class="info-label">Componentes:</span> ${exp.componentes || 'Não catalogados'}</p>
@@ -295,6 +307,161 @@ async function removerAviso(linha) {
     }
 }
  
+// --- MODAL DE DETALHES DO EXPERIMENTO ---
+function abrirModalExperimento(linha) {
+    const exp = experimentos.find(e => e.linha === linha);
+    if (!exp) return;
+ 
+    const modalOverlay = document.getElementById('modalOverlay');
+    const modalConteudo = document.getElementById('modalConteudo');
+ 
+    const statusAtual = exp.status || 'Ativo';
+ 
+    let blocoAcao = '';
+    if (usuarioLogado) {
+        blocoAcao = `
+            <div class="form-group" style="margin-top:16px;">
+                <label for="modalStatusSelect">Status do experimento</label>
+                <select id="modalStatusSelect">
+                    <option value="Ativo" ${statusAtual === 'Ativo' ? 'selected' : ''}>Ativo</option>
+                    <option value="Em Reparo" ${statusAtual === 'Em Reparo' ? 'selected' : ''}>Em Reparo</option>
+                    <option value="Com Defeito" ${statusAtual === 'Com Defeito' ? 'selected' : ''}>Com Defeito</option>
+                </select>
+                <button class="btn-admin-action" style="margin-top:8px;" onclick="mudarStatusExperimento(${linha})">Salvar status</button>
+            </div>
+            <div style="margin-top:16px;">
+                <h4 style="margin-bottom:8px; font-size:14px;">Relatos deste experimento</h4>
+                <div id="modalRelatosDoItem"></div>
+            </div>
+        `;
+    } else {
+        blocoAcao = `
+            <div class="form-group" style="margin-top:16px;">
+                <label for="modalRelatoTexto">Reportar problema com este experimento</label>
+                <textarea id="modalRelatoTexto" rows="3" placeholder="Descreva o que você percebeu..."></textarea>
+                <button class="btn-admin-action" style="margin-top:8px;" onclick="reportarProblema(${linha})">Enviar relato</button>
+            </div>
+        `;
+    }
+ 
+    modalConteudo.innerHTML = `
+        <button class="modal-fechar" onclick="fecharModal()">✕</button>
+        <h3>${exp.nome}</h3>
+        <p class="info-item"><span class="info-label">Área:</span> ${exp.area || 'Não definida'}</p>
+        <p class="info-item"><span class="info-label">Localização:</span> ${exp.localizacao || 'Não cadastrada'}</p>
+        <p class="info-item"><span class="info-label">Componentes:</span> ${exp.componentes || 'Não catalogados'}</p>
+        <p class="info-item"><span class="info-label">Status atual:</span> ${statusAtual}</p>
+        ${blocoAcao}
+    `;
+ 
+    modalOverlay.style.display = 'flex';
+ 
+    if (usuarioLogado) {
+        const relatosDoItem = relatos.filter(r => String(r.experimento_linha) === String(linha));
+        const container = document.getElementById('modalRelatosDoItem');
+        if (relatosDoItem.length === 0) {
+            container.innerHTML = `<p style="font-size:13px; color:#7f8c8d;">Nenhum relato pendente.</p>`;
+        } else {
+            container.innerHTML = relatosDoItem.map(r => `
+                <div class="modal-relato-item">
+                    <div>${r.descricao}</div>
+                    <div style="color:#7f8c8d; font-size:11px;">${r.data}</div>
+                    <div class="modal-relato-acoes">
+                        <button class="btn-admin-action" onclick="confirmarRelato(${r.linha}, ${linha})">Confirmar defeito</button>
+                        <button class="btn-icon" onclick="descartarRelato(${r.linha})">Descartar</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+    }
+}
+ 
+function fecharModal() {
+    document.getElementById('modalOverlay').style.display = 'none';
+}
+ 
+function fecharModalSeClicouFora(event) {
+    if (event.target.id === 'modalOverlay') fecharModal();
+}
+ 
+async function mudarStatusExperimento(linha) {
+    const novoStatus = document.getElementById('modalStatusSelect').value;
+    try {
+        await enviarParaPlanilha('Experimentos', 'mudarStatus', { linha, status: novoStatus });
+        await carregarDados();
+        fecharModal();
+    } catch (err) {
+        alert("Erro ao mudar status: " + err.message);
+    }
+}
+ 
+async function reportarProblema(linha) {
+    const descricao = document.getElementById('modalRelatoTexto').value.trim();
+    if (!descricao) { alert("Descreva o problema antes de enviar."); return; }
+ 
+    const hoje = new Date();
+    const dataFormatada = `${String(hoje.getDate()).padStart(2, '0')}/${String(hoje.getMonth() + 1).padStart(2, '0')}/${hoje.getFullYear()}`;
+ 
+    try {
+        await enviarParaPlanilha('Relatos', 'adicionar', { experimento_linha: linha, descricao, data: dataFormatada });
+        alert("Obrigado! O relato foi enviado e será verificado pelo responsável do laboratório.");
+        fecharModal();
+    } catch (err) {
+        alert("Erro ao enviar relato: " + err.message);
+    }
+}
+ 
+// --- PAINEL ADMIN: RELATOS PENDENTES ---
+function exibirRelatosPendentes() {
+    const lista = document.getElementById('relatosPendentesList');
+    const contador = document.getElementById('contadorRelatos');
+    if (!lista || !contador) return;
+ 
+    contador.textContent = relatos.length;
+ 
+    if (relatos.length === 0) {
+        lista.innerHTML = `<p style="font-size:13px; color:#7f8c8d;">Nenhum relato pendente.</p>`;
+        return;
+    }
+ 
+    lista.innerHTML = relatos.map(r => {
+        const exp = experimentos.find(e => String(e.linha) === String(r.experimento_linha));
+        const nomeExp = exp ? exp.nome : `Experimento (linha ${r.experimento_linha})`;
+        return `
+            <div class="modal-relato-item">
+                <strong>${nomeExp}</strong>
+                <div>${r.descricao}</div>
+                <div style="color:#7f8c8d; font-size:11px;">${r.data}</div>
+                <div class="modal-relato-acoes">
+                    <button class="btn-admin-action" onclick="confirmarRelato(${r.linha}, ${r.experimento_linha})">Confirmar defeito</button>
+                    <button class="btn-icon" onclick="descartarRelato(${r.linha})">Descartar</button>
+                </div>
+            </div>
+        `;
+    }).join('');
+}
+ 
+async function confirmarRelato(linhaRelato, experimentoLinha) {
+    try {
+        await enviarParaPlanilha('Experimentos', 'mudarStatus', { linha: experimentoLinha, status: 'Com Defeito' });
+        await enviarParaPlanilha('Relatos', 'remover', { linha: linhaRelato });
+        await carregarDados();
+        fecharModal();
+    } catch (err) {
+        alert("Erro ao confirmar relato: " + err.message);
+    }
+}
+ 
+async function descartarRelato(linhaRelato) {
+    if (!confirm("Descartar esse relato sem alterar o status do experimento?")) return;
+    try {
+        await enviarParaPlanilha('Relatos', 'remover', { linha: linhaRelato });
+        await carregarDados();
+    } catch (err) {
+        alert("Erro ao descartar relato: " + err.message);
+    }
+}
+ 
 // --- BARRA DE BUSCA ---
 if (searchBar) {
     searchBar.addEventListener('input', (e) => {
@@ -318,4 +485,17 @@ window.removerExperimento = removerExperimento;
 window.adicionarAvisoNoMural = adicionarAvisoNoMural;
 window.removerAviso = removerAviso;
 window.editarExperimento = editarExperimento;
+window.abrirModalExperimento = abrirModalExperimento;
+window.fecharModal = fecharModal;
+window.fecharModalSeClicouFora = fecharModalSeClicouFora;
+window.mudarStatusExperimento = mudarStatusExperimento;
+window.reportarProblema = reportarProblema;
+window.confirmarRelato = confirmarRelato;
+window.descartarRelato = descartarRelato;
  
+
+
+
+
+
+
