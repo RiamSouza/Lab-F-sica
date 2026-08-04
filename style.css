@@ -285,8 +285,8 @@ header { display: flex; justify-content: space-between; align-items: center; mar
 .badge-outros { background-color: #f2f4f4; color: #7f8c8d; }
 .card-outros { border-top-color: #bdc3c7 !important; }
 
-.badge-instrumentosdemedida { background-color: #ffefd8; color: #c7a167; }
-.card-instrumentosdemedida { border-top-color: #c7a167 !important; }
+.badge-instrumentosdemedida { background-color: #f0edfc; color: #6c5ce7; }
+.card-instrumentosdemedida { border-top-color: #6c5ce7 !important; }
 
 .badge-item { background-color: #eafaf1; color: #27ae60; }
 .card-item { border-top-color: #2ecc71 !important; }
@@ -315,3 +315,72 @@ header { display: flex; justify-content: space-between; align-items: center; mar
 .btn-icon:hover {
     background-color: rgba(0, 0, 0, 0.05);
 }
+/* --- SELO DE STATUS (opção 2: selo no topo do card) --- */
+.status-badge {
+    font-size: 11px;
+    padding: 2px 8px;
+    border-radius: 4px;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-weight: 500;
+}
+.status-reparo { background-color: #fff3e0; color: #b25c00; }
+.status-defeito { background-color: #fdedec; color: #c0392b; }
+.card-top-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 8px;
+    margin-bottom: 5px;
+}
+.card-clicavel { cursor: pointer; }
+ 
+/* --- MODAL DE DETALHES DO EXPERIMENTO --- */
+.modal-overlay {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.45);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    padding: 20px;
+}
+.modal-content {
+    background: #fff;
+    border-radius: 10px;
+    padding: 24px;
+    max-width: 480px;
+    width: 100%;
+    max-height: 85vh;
+    overflow-y: auto;
+}
+.modal-content h3 {
+    margin-top: 0;
+}
+.modal-fechar {
+    float: right;
+    cursor: pointer;
+    font-size: 18px;
+    background: none;
+    border: none;
+    color: #7f8c8d;
+}
+.modal-relato-item {
+    border: 1px solid #eee;
+    border-radius: 6px;
+    padding: 8px 10px;
+    margin-bottom: 8px;
+    font-size: 13px;
+}
+.modal-relato-acoes {
+    display: flex;
+    gap: 8px;
+    margin-top: 6px;
+}
+.modal-relato-acoes button {
+    font-size: 12px;
+    padding: 4px 8px;
+}
+ 
